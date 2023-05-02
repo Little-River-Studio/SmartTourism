@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>云游泰山</title>
+	<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+	<meta charset="UTF-8">
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+		}
+
+		header {
+			text-align: center;
+			background-color: #f2f2f2;
+			padding: 20px;
+		}
+
+		h1 {
+			margin: 0;
+		}
+
+		.image-box {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-top: 50px;
+		}
+
+		img {
+			max-width: 30%;
+			height: 300px; /* 指定容器高度 */
+  			overflow: hidden
+		}
+		
+
+		.intro {
+			margin-top: 20px;
+    		width: 95%;
+    		margin: 0 auto;
+			white-space: pre-wrap;
+			
+		}
+		p::after {
+  			content: "  ";
+  			white-space: pre;
+			}
+
+
+        #centered-section {
+	        position: fixed;
+			left: 0;
+			width: 100%;
+			background-color: #ffffff;
+			padding: 10px;
+			box-sizing: border-box;
+			display: flex;
+            flex-wrap: wrap;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+        }
+
+        #centered-section h2 {
+	        margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 100%
+        }
+
+        #centered-section .button {
+	        background-color: #fff;
+			color: #333;
+			padding: 10px 20px;
+			margin: 10px;
+			border: none;
+			border-radius: 5px;
+			text-decoration: none;
+			font-size: 16px;
+        }
+
+        #centered-section .button:hover {
+			background-color: #333;
+			color: #fff;
+		}
+		
+        footer {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background-color: #ffffff;
+			padding: 10px;
+			box-sizing: border-box;
+			display: flex;
+            flex-wrap: wrap;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0px -1px 3px rgba(0, 0, 0, 0.2);
+		}
+
+		.input-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 85%;
+            margin: 0 auto;
+        }
+
+        .input-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .button1 {
+			background-color: #fff;
+			color: #333;
+			padding: 10px 20px;
+			margin: 10px;
+			border: none;
+			border-radius: 5px;
+			text-decoration: none;
+			font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 5%
+		}
+
+		.button1:hover {
+			background-color: #333;
+			color: #fff;
+		}
+
+        .button {
+			background-color: #fff;
+			color: #333;
+			padding: 10px 20px;
+			margin: 10px;
+			border: none;
+			border-radius: 5px;
+			text-decoration: none;
+			font-size: 16px;
+		}
+
+		.button:hover {
+			background-color: #333;
+			color: #fff;
+		}
+		
+		
+
+	</style>
+</head>
+<body>
+	<header>
+		<h1>智慧旅游-泰山风景区</h1>
+	</header>
+
+	<!--<canvas id="myChart" width="200px" height="200px"></canvas>-->
+
+	<div class="image-box">
+		<img id="picture">
+	</div>
+
+	<div id="introducion" class="intro">
+		<p></p>
+	</div>
+
+    <div id="centered-section">
+	    <h2 id="name">正在初始化...</h2>
+	    <!--<a class="button">上一景点</a>-->
+	    <a class="button" onclick="next()">下一景点</a>
+    </div>
+
+	<footer>
+        <div class="input-container">
+            <input id="texts" type="text" placeholder="请输入想要询问导游的内容...">
+            </div>
+
+        <a class="button1" onclick="responce()">搜索</a>
+
+        <p>
+            <label>选择播报语音：</label>
+            <select id="voiceSelect" onchange="play()"></select>
+        </p>
+        <a id="serch" class="button" onclick="populateVoiceList()">加载播放语音</a>
+		<a class="button" onclick="resume()">继续</a>
+		<a class="button" onclick="pause()">暂停</a>
+
+
+	</footer>
+
+    <script>
+		
+        var voiceSelect = document.querySelector("#voiceSelect"),
+            voices = [];
+			to_speak = window.speechSynthesis,
+			introduction = document.getElementById('introducion');
+			title = document.getElementById('name');
+			picture = document.getElementById('picture');
+			labels = []
+			sort = []
+
+			
+			time = 0;
+			ID = 0
+			trip = 0
+    		histry = 0
+    		immortal = 0
+    		ID = 0
+    		letter = 0
+
+			url = ''
+			
+			_timer = false
+			//canvas = document.getElementById("myChart");
+
+
+		post()
+		_timer = true
+		timer()
+		populateVoiceList()
+
+
+		function next(){
+			_timer = false
+			if (ID < 10){
+				post()
+
+				document.getElementById("texts").placeholder = "置信度：旅游：" + trip + ' ,' + "历史：" + histry +" ,"+ "求仙：" + immortal;
+				
+				/*
+				myChart.destroy()
+
+				const myChart = new Chart(canvas, {
+					type: "bar",
+  					data: {
+    					labels: ["旅游",'求仙','历史'],
+    					datasets: [{
+      						label: "置信度",
+      						data: [trip,histry,immortal],
+      						backgroundColor: [
+        						"rgba(255, 99, 132, 0.2)",
+        						"rgba(54, 162, 235, 0.2)",
+        						"rgba(255, 206, 86, 0.2)",
+      						],
+      						borderColor: [
+        						"rgba(255, 99, 132, 1)",
+        						"rgba(54, 162, 235, 1)",
+        						"rgba(255, 206, 86, 1)",
+      						],
+      						borderWidth: 1
+    					}]
+  					},
+  					options: {
+    					scales: {
+      						yAxes: [{
+        						ticks: {
+          							beginAtZero: true
+        						}
+      						}]
+    					}
+  					}
+				});
+				*/
+				
+				time = 0
+				_timer = true
+				timer()
+			}
+			else {
+				alert("已经是最后一个景点了！");
+			}
+
+		}
+
+		function play() {
+			myCheckFunc();//检查文本框是否为空
+			cancel(); //
+			to_speak = new SpeechSynthesisUtterance(introduction.innerText);
+ 
+			//to_speak.rate = 1.4;// 设置播放语速，范围：0.1 - 10之间
+ 
+			var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+			for(i = 0; i < voices.length; i++) {
+				if(voices[i].name === selectedOption) {
+					to_speak.voice = voices[i];
+				}
+			}
+ 
+			window.speechSynthesis.speak(to_speak);
+ 
+		}
+
+		function cancel() {
+			window.speechSynthesis.cancel();
+		}
+        
+        function populateVoiceList() {
+			voices = speechSynthesis.getVoices();
+			if (voices.length === 0) {
+  				alert("语音数据没有加载完成，请稍后尝试！");
+			}
+			else {
+				for(i = 0; i < voices.length; i++) {
+					var option = document.createElement('option');
+					option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+ 
+					if(voices[i].default) {
+						option.textContent += ' -- DEFAULT';
+					}
+					option.setAttribute('data-lang', voices[i].lang);
+					option.setAttribute('data-name', voices[i].name);
+					voiceSelect.appendChild(option);
+				}
+			}
+		}
+
+		function pause() {
+			window.speechSynthesis.pause();
+		}
+		//继续播放
+		function resume() {
+			window.speechSynthesis.resume(); //继续
+		}
+
+		function cls()  {
+			document.getElementById("texts").value=""; //清空文本框
+		}
+
+		function myCheckFunc() {
+		        let x;
+		        x = document.getElementById("texts").value;
+		        if (x === ""){
+					return 1    
+				}
+		}
+
+		function responce() {
+		    
+			if (myCheckFunc() === 1){    
+				alert("没有输入文字！");
+				return 0
+			}
+
+			const input = document.getElementById('texts').value;
+			const button = document.getElementById('serch');
+			button.disabled = true;
+			cls()
+			fetch('http://chat.yuanhuameng.top', {
+  				method: 'POST',
+  				headers: {
+    				'Content-Type': 'application/json'
+  				},
+  				body: JSON.stringify({
+    				message: input,
+					ID: ID
+  				})
+			})
+			.then(response => response.json())
+			.then(data => {
+  				introduction.innerText = data.response;
+				button.disabled = false;
+				play()
+			})
+			.catch(error => console.error(error));
+			}
+
+		
+		function post(){
+			fetch('http://guide.yuanhuameng.top', {
+  				method: 'POST',
+  				headers: {
+    				'Content-Type': 'application/json'
+  				},
+  				body: JSON.stringify({
+    				trip: trip,
+					history: histry,
+					immortal: immortal,
+					ID: ID,
+					time: time,
+					letter: letter
+  				})
+			})
+			.then(response => response.json())
+			.then(data => {
+  				trip = data.trip;
+				histry = data.history;
+				immortal = data.immortal;
+				letter = data.letter;
+				introduction.innerText = data.text;
+				title.innerText = data.title;
+				labels = data.labels
+				sort = data.score
+
+				ID = ID + 1
+				url = "http://assets.yuanhuameng.top/guide/" + ID + ".jpeg"
+				picture.src = url
+				play()
+			})
+			.catch(error => console.error(error));
+
+		}
+		
+		function timer(){
+			while(_timer)
+				setTimeout(function() {
+					timer = timer + 1
+				}, 1000);
+		}
+
+		function delay(ms) {
+  			return new Promise(resolve => setTimeout(resolve, ms));
+		}
+
+		async function timer() {
+			while (_timer) {
+    		await delay(1000);
+    		time++;
+  		}
+
+}
+
+
+		
+
+
+	</script>
+</body>
+</html>
